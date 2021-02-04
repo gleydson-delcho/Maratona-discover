@@ -86,14 +86,27 @@ const DOM = {
             <td class="${CSSclass}">${amount}</td>
             <td class="date">${transaction.date}</td>
             <td>
-                <img onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover transação">
+                <img style="cursor: pointer;" onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover transação">
             </td>        
         `
         return html
         
     },
 
-    //Class display
+    updateCard(){
+        const displayTotal = Transaction.total()        
+        if( displayTotal < 0){
+            document
+                .querySelector('.card.total')
+                .classList
+                .add('negative');
+            }else{
+                document
+                .querySelector('.card.total')
+                .classList
+                .remove('negative');
+            }
+    },
 
     updateBalance(){
         document
@@ -197,7 +210,7 @@ const Form = {
 const App = {
     init() {
         Transaction.all.forEach(DOM.addTransaction);  
-        //chama classe display     
+        DOM.updateCard();     
         DOM.updateBalance();
         Storage.set(Transaction.all)
     },
