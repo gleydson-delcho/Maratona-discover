@@ -8,12 +8,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,400;0,700;1,100;1,400;1
         ,700&display=swap" rel="stylesheet">  
-
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.1.0/jspdf.plugin.autotable.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+        
 </head>
-<body>
-    <header>
-        <img src="./assets/logo.svg" alt="$dev.finances$">        
+<body >
+    <header id="theme">
+        <img src="./assets/logo.svg" alt="$dev.finances$">  
+        <div class="themeToggle">
+            <input type="checkbox" name="checkbox" id="change-theme">
+            <label for="change-theme" class="label">                
+                <div class="ball"></div>
+            </label>
+        </div>
     </header>
 
     <main class="container">
@@ -34,7 +43,7 @@
                 </h3>
                 <p id="expenseDisplay">0,00</p>
             </div>
-            <div class="card total">
+            <div class="card total" id="theme">
                 <h3>
                     <span>Total</span>
                     <img src="./assets/total.svg" alt="Image de Total">
@@ -53,7 +62,8 @@
                         <th>Descrição</th>            
                         <th>Valor</th>            
                         <th>Data</th>
-                        <th></th>
+                        <th>Excluir</th>
+                        <th>Editar</th>
                     </tr>            
                 </thead>        
                 <tbody>                    
@@ -93,6 +103,7 @@
         <p>Balanço financeiro</p><span>Desenvolvido durante a maratona discover - RocketSeat</span>
     </footer>
 
-    <script src="./controller.js"></script>
+    <script src="./controller.js"></script>    
+    
 </body>
 </html>

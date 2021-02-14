@@ -1,8 +1,19 @@
+/*Variáveis =============================*/
 :root {
+    --body:  #f0f2f5;
     --dark-blue: #363f5f;
-    --green: #49AA26;
-    --light-green: #3dd705;
-    --red: #e92929;
+    --background-header: #2d4a22;
+    --white-color-base: #fff;
+    --card-color-base: #fff;
+    --card-text-color: #363f5f;
+    --card-total-green: #49AA26;
+    --button-green: #49AA26;
+    --button-light-green: #3dd705;
+    --button-cancel-red: #e92929;
+    --total-red: red;
+    --data-table-color: #969cb3;
+    --text-help-color: #363f5f;
+    --table-description-color: #363f5f;    
 }
 
 * {
@@ -16,9 +27,11 @@ html {
 }
 
 body {
-    background-color: #f0f2f5;
+    background-color: var(--body);
     font-family: 'Poppins', sans-serif;
 }
+
+/*Titles ===========================*/
 
 h2 {
     margin-top: 3.2rem;
@@ -27,43 +40,74 @@ h2 {
     font-weight: normal;
 }
 
+
+/* Header ===================================== */
 header {
-    background-color: #2d4a22;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    background-color: var(--background-header);
     padding: 3rem 0 10rem;
     text-align: center;
 }
 
 img {
-    color: #fff;
+    color: var(--white-color-base);
     font-weight: 100;
 }
+
+/* Button Theme ======================================== */
+#change-theme {
+    opacity: 0;
+}
+#change-theme:checked + .label {
+    background-color: #2a2c2e;
+    
+}
+
+#change-theme:checked + .label .ball {
+    background-color: purple;
+    transform: translateX(20px);
+}
+
+.label{
+    display: flex;
+    background-color: #fff;
+    height: 28px;
+    width: 50px;
+    padding: 3px;
+    border-radius: 50px;
+}
+
+.ball {
+    background-color: #2d4a22;
+    border-radius: 100%;
+    height: 22px;
+    width: 22px;
+    position: absolute;
+    transition: transform 0.3s linear;
+}
+
+/* Balance ================================================ */
 
 #balance {
     margin-top: -8rem;
 }
 
 #balance h2 {
-    color: #fff;
+    color: var(--white-color-base);
 }
 
-.sr-only{
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;   
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-}
+/* Cards ======================================= */
 
 .card {
-    background-color: #fff;
+    background-color: var(--card-color-base);
     padding: 1.5rem 2rem;
     border-radius: 0.25rem;
     margin-bottom: 2rem;
-    color: var(--dark-blue);
+    color: var(--card-text-color);
 }
 
 .card h3 { 
@@ -83,12 +127,24 @@ img {
 }
 
 .card.total {
-    background-color: var(--green);
+    background-color: var(--card-total-green);
     color: #fff;
 }
 .card.total.negative {
-    background-color: var(--green);
-    color: var(--red);
+    background-color: var(--card-total-green);
+    color: var(--total-red);
+}
+
+.sr-only{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;   
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
 }
 
 .container {
@@ -96,13 +152,15 @@ img {
     margin: auto;
 }
 
+/* Links & buttons ==================================== */
+
 a {
-    color: var(--green);
+    color: var(--button-green);
     text-decoration: none;    
 }
 
 a:hover {
-    color: var(--light-green);
+    color: var(--button-light-green);
 }
 
 button {
@@ -110,14 +168,14 @@ button {
     height: 50px;
     border: none;
     color: white;
-    background: var(--green);
+    background: var(--button-green);
     padding: 0;
     border-radius: 0.2rem;
     cursor: pointer;
 }
 
 button:hover {
-    background: var(--light-green);
+    background: var(--button-light-green);
 }
 
 .button.new {
@@ -127,8 +185,8 @@ button:hover {
 
 .button.cancel {
     height: 50px;
-    color: var(--red);
-    border: 2px var(--red) solid;
+    color: var(--button-cancel-red);
+    border: 2px var(--button-cancel-red) solid;
     /* background: #fff; */
     display: flex;
     align-items: center;
@@ -140,6 +198,8 @@ button:hover {
     opacity: 1;
 }
 
+/* Table ========================================== */
+
 #transaction {
     display: block;
     width: 100%;
@@ -148,13 +208,13 @@ button:hover {
 
 #data-table {       
     border-spacing: 0 0.5rem;
-    color: #969cb3;
+    color: var(--data-table-color);
     width:100%;
     
 }
 
 table th {
-    background-color: #fff;
+    background-color: var(--white-color-base);
     font-weight: normal ;
     padding: 1rem 2rem;
     text-align: left;
@@ -168,7 +228,7 @@ table thead tr th:last-child, table tbody tr td:last-child  {
 }
 
 table tbody td {
-    background-color: #fff;
+    background-color: var(--white-color-base);
     padding: 1rem 2rem;    
 }
 
@@ -181,7 +241,7 @@ table tbody tr:hover {
 }
 
 td.description {
-    color: var(--dark-blue);
+    color: var(--table-description-color);
 }
 
 td.income {
@@ -189,8 +249,10 @@ td.income {
 }
 
 td.expense {
-    color: #e92929;
+    color: #ff0000;
 }
+
+/* Modal ========================================== */
 
 .modal-overlay {
     width: 100%;
@@ -215,11 +277,13 @@ td.expense {
     visibility: visible;
 }
 .modal {
-    background: #f0f2f5;
+    background: var(--body);
     padding: 2.4rem;
 
     position: relative;
 }
+
+/* Form ====================================== */
 
 #form {
     max-width: 500px;
@@ -245,6 +309,10 @@ input {
     opacity: 0.4;
 }
 
+.help {
+    color: var(--text-help-color);
+}
+
 .input-group.actions {
     display: flex;
     align-items: center;
@@ -258,13 +326,17 @@ input {
     
 }
 
+/* Footer ============================================= */
+
 footer {
     text-align: center;
     padding: 4rem 0 2rem;
-    color: var(--dark-blue);
+    color: var(--card-text-color);
     opacity: 0.6;
     z-index: 1;
 }
+
+/* Responsive ======================================== */
 
 @media(min-width: 800px) {
     html {
@@ -276,4 +348,30 @@ footer {
         grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
     }
+}
+
+/* Themes ======================================== */
+
+
+body.dark{
+    --body:  #2a2c2e;
+    --dark-blue:#fff;
+    --background-header: purple;
+    --white-color-base: #fff;
+    --card-color-base: #969cb3;
+    --card-text-color: #fff;
+    --card-total-green: #494649;
+    --button-green: #49AA26;
+    --button-light-green: #3dd705;
+    --total-red: red;
+    --button-cancel-red: #e92929;
+    --data-table-color: #969cb3;
+    --text-help-color: #fff;
+    --table-description-color: #363f5f;  
+
+    transition: 0.4s;
+}
+
+body.light {
+    transition: 0.4s;
 }

@@ -5,7 +5,7 @@ const Modal = {
             .classList
             .toggle('active')            
     }   
-}
+};
 
 const Storage = {
     get(){
@@ -14,7 +14,7 @@ const Storage = {
     set(transactions){
         localStorage.setItem("dev.finances:transactions", JSON.stringify(transactions))
     },
-}
+};
 
 //Este array foi utilizado nos testes!
 const transactions = [
@@ -41,6 +41,8 @@ const Transaction = {
         Transaction.all.push(transaction);        
         App.reload();
     },
+    
+    
 
     remove(index){
         Transaction.all.splice(index, 1);
@@ -57,8 +59,7 @@ const Transaction = {
         Transaction.all.forEach((transaction) => {transaction.amount < 0 ? expense += transaction.amount : ''})
         return expense;
     },
-    total(){
-        
+    total(){        
         return Transaction.incomes() + Transaction.expenses();
     }
 
@@ -87,25 +88,33 @@ const DOM = {
             <td class="date">${transaction.date}</td>
             <td>
                 <img style="cursor: pointer;" onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover transação">
-            </td>        
+            </td>     
+            <td>
+                <img style="cursor: pointer;" onclick="DOM.recover(${index})" src="./assets/edit.svg" alt="Remover transação">
+            </td>     
+
         `
         return html
         
     },
 
     updateCard(){
-        const displayTotal = Transaction.total()        
-        if( displayTotal < 0){
-            document
-                .querySelector('.card.total')
-                .classList
-                .add('negative');
-            }else{
+        if(addEventListener("click", this.updateCard)){
+            const displayTotal = Transaction.total()        
+            if( displayTotal < 0){
                 document
-                .querySelector('.card.total')
-                .classList
-                .remove('negative');
-            }
+                    .querySelector('.card.total')
+                    .classList
+                    .add('negative');
+                }else{
+                    document
+                    .querySelector('.card.total')
+                    .classList
+                    .remove('negative');
+                }
+        }else{
+            return ''
+        }
     },
 
     updateBalance(){
@@ -118,6 +127,23 @@ const DOM = {
         document
             .getElementById('totalDisplay')
             .innerHTML = Utils.formatCurrency(Transaction.total())
+    },
+    recover(transaction){ 
+        
+        let lastTransaction = {
+            'description': transaction.description,
+            'amount': amount,
+            'date': date
+        }
+        let finalTransaction = {
+            'description': transaction.description,
+            'amount': transaction.amount,
+            'date': transaction.date
+        }
+        Modal.toggle(lastTransaction)
+        Transaction.all.splice(1, finalTransaction);
+        Transaction.remove(lastTransaction, 1);
+        App.reload();       
     },
 
     clearTransactions(){
@@ -170,11 +196,12 @@ const Form = {
         }
     },
 
+    
+
     formatValues(){
         let { description, amount, date } = Form.getValues();
         amount = Utils.formatAmount(amount);
-        date = Utils.formatDate(date);
-        
+        date = Utils.formatDate(date);        
         return {
             description,
             amount,
@@ -186,33 +213,66 @@ const Form = {
         Transaction.add(transaction);
     },
 
+   
+
     clearFields(){
         Form.description.value = '';
         Form.amount.value = '';
         Form.date.value = '';
     },
+    
 
     submit(event) {
         event.preventDefault();
-
-        try {
+        try {            
             Form.validateFields();
             const transaction = Form.formatValues();
             Form.saveTransaction(transaction);            
             Form.clearFields();
             Modal.toggle();            
         } catch (error) {
-            alert(error.message)
+            alert(error.message);           
         }
     }
 }
+
+const changeTheme = document.getElementById('change-theme');
+
+changeTheme.checked = false;
+
+function handleClick(){
+    if(this.checked){
+        document.body.classList.remove('light');
+        document.body.classList.add('dark');
+        localStorage.setItem("theme", "dark");
+    }else{
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+        localStorage.setItem("theme", "light");
+    }
+}
+
+
+function chargerTheme(){
+    const localStorageTheme = localStorage.getItem("theme");
+    
+    if(localStorageTheme != null && localStorageTheme === "dark"){
+        document.body.className = localStorageTheme;
+        
+        const changedTheme = document.getElementById("change-theme");
+        changedTheme.checked = true;
+    }
+}
+
+changeTheme.addEventListener("click", handleClick)
+
 
 const App = {
     init() {
         Transaction.all.forEach(DOM.addTransaction);  
         DOM.updateCard();     
         DOM.updateBalance();
-        Storage.set(Transaction.all)
+        Storage.set(Transaction.all)         
     },
     reload() {
         DOM.clearTransactions();
