@@ -1,3 +1,5 @@
+// const { LayersControl } = require("react-leaflet");
+
 const Modal = {
     toggle(){
         document
@@ -90,7 +92,7 @@ const DOM = {
                 <img style="cursor: pointer;" onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover transação">
             </td>     
             <td>
-                <img style="cursor: pointer;" onclick="DOM.recover(${index})" src="./assets/edit.svg" alt="Remover transação">
+                <img class="edit" style="cursor: pointer;" onclick="DOM.recover(${index})" src="./assets/edit.svg" alt="Editar transação">
             </td>     
 
         `
@@ -98,8 +100,7 @@ const DOM = {
         
     },
 
-    updateCard(){
-        if(addEventListener("click", this.updateCard)){
+    updateCard(){       
             const displayTotal = Transaction.total()        
             if( displayTotal < 0){
                 document
@@ -111,10 +112,7 @@ const DOM = {
                     .querySelector('.card.total')
                     .classList
                     .remove('negative');
-                }
-        }else{
-            return ''
-        }
+                }       
     },
 
     updateBalance(){
@@ -129,7 +127,6 @@ const DOM = {
             .innerHTML = Utils.formatCurrency(Transaction.total())
     },
     recover(transaction){ 
-        
         let lastTransaction = {
             'description': transaction.description,
             'amount': amount,
@@ -140,10 +137,12 @@ const DOM = {
             'amount': transaction.amount,
             'date': transaction.date
         }
-        Modal.toggle(lastTransaction)
-        Transaction.all.splice(1, finalTransaction);
-        Transaction.remove(lastTransaction, 1);
-        App.reload();       
+        Modal.toggle()
+        Transaction.all.splice(1, finalTransaction)        
+        
+        if(finalTransaction){
+        Transaction.remove(lastTransaction,1);             
+        }
     },
 
     clearTransactions(){
