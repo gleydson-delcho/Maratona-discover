@@ -1,11 +1,10 @@
-// const { LayersControl } = require("react-leaflet");
-
 const Modal = {
     toggle(){
         document
             .querySelector('.modal-overlay')
             .classList
-            .toggle('active')            
+            .toggle('active') 
+        Form.clearFields();           
     }   
 };
 
@@ -44,11 +43,26 @@ const Transaction = {
         App.reload();
     },
     
-    
-
     remove(index){
         Transaction.all.splice(index, 1);
         App.reload();
+    },
+
+    recover(index, transaction){ 
+        Modal.toggle();
+        let elDescription = document.getElementById('description');
+        let elAmount = document.getElementById('amount');
+        let elDate = document.getElementById('date');
+        let descriptionValue = Transaction.all[index].description;
+        let amountValue = Transaction.all[index].amount;
+        let dateValue = Transaction.all[index].date;
+
+        elDescription.value = descriptionValue;
+        elAmount.value = Utils.editAmount(amountValue);
+        elDate.value = Utils.editDate(dateValue);
+        
+        let element = document.getElementById('save');
+        element.onclick = () => Transaction.all.splice(index, 1); 
     },
 
     incomes(){
@@ -92,7 +106,7 @@ const DOM = {
                 <img style="cursor: pointer;" onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover transação">
             </td>     
             <td>
-                <img class="edit" style="cursor: pointer;" onclick="DOM.recover(${index})" src="./assets/edit.svg" alt="Editar transação">
+                <img class="edit" style="cursor: pointer;" onclick="Transaction.recover(${index})" src="./assets/edit.svg" alt="Editar transação">
             </td>     
 
         `
@@ -126,24 +140,7 @@ const DOM = {
             .getElementById('totalDisplay')
             .innerHTML = Utils.formatCurrency(Transaction.total())
     },
-    recover(transaction){ 
-        let lastTransaction = {
-            'description': transaction.description,
-            'amount': amount,
-            'date': date
-        }
-        let finalTransaction = {
-            'description': transaction.description,
-            'amount': transaction.amount,
-            'date': transaction.date
-        }
-        Modal.toggle()
-        Transaction.all.splice(1, finalTransaction)        
-        
-        if(finalTransaction){
-        Transaction.remove(lastTransaction,1);             
-        }
-    },
+    
 
     clearTransactions(){
         DOM.transactionsContainer.innerHTML = '';
@@ -156,10 +153,17 @@ const Utils = {
         value = Number(value)*100;
         return Math.round(value);
     },
+    editAmount(amountValue){
+        amountValue = Number(amountValue)/100;
+        return Math.round(amountValue)
+    },
     formatDate(date){
-        const splittedDate = date.split('-')
-        
+        const splittedDate = date.split('-');        
         return `${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`
+    },
+    editDate(dateValue){
+        const splittedDate = dateValue.split('/');
+        return `${splittedDate[2]}-${splittedDate[1]}-${splittedDate[0]}`
     },
     formatCurrency(value) {
         const signal = Number(value) < 0 ? "-" : "";
@@ -169,7 +173,6 @@ const Utils = {
             style: "currency",
             currency: "BRL"
         });
-
         return signal + value;
     }
 }
@@ -187,6 +190,12 @@ const Form = {
         }
     },
 
+    setValues(description, amount, date){
+        Form.description.value = description;
+        Form.amount.value = amount;
+        Form.date.value = date;        
+    },
+
     validateFields(){
         const { description, amount, date } = Form.getValues()
 
@@ -194,8 +203,6 @@ const Form = {
             throw new Error("Oops!!! Você deve preencher todos os campos!");
         }
     },
-
-    
 
     formatValues(){
         let { description, amount, date } = Form.getValues();
@@ -212,14 +219,11 @@ const Form = {
         Transaction.add(transaction);
     },
 
-   
-
     clearFields(){
         Form.description.value = '';
         Form.amount.value = '';
         Form.date.value = '';
     },
-    
 
     submit(event) {
         event.preventDefault();
