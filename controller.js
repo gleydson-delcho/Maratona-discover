@@ -62,7 +62,7 @@ const Transaction = {
         elDate.value = Utils.editDate(dateValue);
         
         let element = document.getElementById('save');
-        element.onclick = () => Transaction.all.splice(index, 1); 
+        element.onclick = function() {Transaction.all.splice(index, 1)}; 
     },
 
     incomes(){
