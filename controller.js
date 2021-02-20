@@ -1,25 +1,20 @@
 const Modal = {
     isEditing: false,
-    open(isEditing){
-        if(isEditing){
-            Modal.setIsEditing(true);
-            const transaction = Transaction.all[Transaction.underEditing];
+    open(isEditing, index = null){
+        if(isEditing){                       
+            const transaction = Transaction.all[index];
             Form.updateFields(transaction);
             
         }else{              
             Form.clearFields();
         }
         document
-            .querySelector('.modal-overlay')
-            .classList
-            .add('active')                          
+            .querySelector('.modal-overlay').classList.add('active');
     },
-
+   
     close(){
         document
-            .querySelector('.modal-overlay')
-            .classList
-            .remove('active')       
+            .querySelector('.modal-overlay').classList.remove('active');
     },
     
     setIsEditing(value){
@@ -47,25 +42,6 @@ const Storage = {
     },
 };
 
-//Este array foi utilizado nos testes!
-const transactions = [
-    {       
-        description: 'Aluguel',
-        amount: -50000,
-        date: '02/02/2021'
-    },
-    {
-        description: 'criação Web site',
-        amount: 5000000,
-        date: '02/02/2021'
-    },
-    {
-        description: 'Internet',
-        amount: -20000,
-        date: '02/02/2021'
-    },
-];
-
 const Transaction = {
     all: Storage.get('dev.finances:transactions', true) || [],
     underEditing: null,
@@ -79,26 +55,15 @@ const Transaction = {
         App.reload();
     },
 
-    recover(index,){ 
-        Transaction.underEditing = index;          
-        let elDescription = document.getElementById('description');
-        let elAmount = document.getElementById('amount');
-        let elDate = document.getElementById('date');
-        let descriptionValue = Transaction.all[index].description;
-        let amountValue = Transaction.all[index].amount;
-        let dateValue = Transaction.all[index].date;
-
-        elDescription.value = descriptionValue;
-        elAmount.value = Utils.editAmount(amountValue);
-        elDate.value = Utils.editDate(dateValue);
-        
-        let element = document.getElementById('save');
-        element.onclick = function() {Transaction.update(index,1)};       
-        Modal.open(true);        
+    recover(index){ 
+        Transaction.underEditing = index; 
+        Modal.open(true);
     },
 
     update(index, updateTransaction){
+
         const { description, amount, date } = updateTransaction;
+
         Transaction.all[index] = {
             description,
             amount,
@@ -121,7 +86,6 @@ const Transaction = {
     total(){        
         return Transaction.incomes() + Transaction.expenses();
     }
-
 }
 
 
@@ -133,9 +97,9 @@ const DOM = {
         let tr = document.createElement('tr')
         tr.innerHTML = DOM.innerHTMLTransaction(transaction, index)
         tr.dataset.index = index        
-        DOM.transactionsContainer.appendChild(tr)
-        
+        DOM.transactionsContainer.appendChild(tr)        
     },
+
     innerHTMLTransaction(transaction, index) {
 
         const CSSclass = transaction.amount > 0 ? "income" : "expense";
@@ -149,12 +113,11 @@ const DOM = {
                 <img style="cursor: pointer;" onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover transação">
             </td>     
             <td>
-                <img class="edit" style="cursor: pointer;" onclick="Transaction.recover(${index})" src="./assets/edit.svg" alt="Editar transação">
+                <img class="edit" style="cursor: pointer;" onclick="Modal.open(true, ${index})" src="./assets/edit.svg" alt="Editar transação">
             </td>     
 
         `
-        return html
-        
+        return html        
     },
 
     updateCard(){       
@@ -257,7 +220,6 @@ const Form = {
             date
         }
     },
-
     
     saveTransaction(transaction){
         Transaction.add(transaction);
@@ -274,7 +236,7 @@ const Form = {
         
         try {            
             Form.validateFields();
-            const index = Transaction.editionIndex
+            const index = Transaction.underEditing
             const transaction = Form.formatValues();
             if(Modal.isEditing){
                 Transaction.update(index, transaction)
@@ -288,6 +250,7 @@ const Form = {
             alert(error.message);           
         }
     },
+    
     updateFields({ description, amount, date }){
         Form.description.value = description;
         Form.amount.value = Utils.editAmount(amount);
@@ -330,7 +293,7 @@ const App = {
     init() {        
         Transaction.all.forEach(DOM.addTransaction);  
         DOM.updateCard();     
-        DOM.updateBalance();
+        DOM.updateBalance();        
         Storage.set('dev.finances:transactions', Transaction.all, true)         
     },
     reload() {
