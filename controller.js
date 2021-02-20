@@ -1,19 +1,49 @@
 const Modal = {
-    toggle(){
+    isEditing: false,
+    open(isEditing){
+        if(isEditing){
+            Modal.setIsEditing(true);
+            const transaction = Transaction.all[Transaction.underEditing];
+            Form.updateFields(transaction);
+            
+        }else{              
+            Form.clearFields();
+        }
         document
             .querySelector('.modal-overlay')
             .classList
-            .toggle('active') 
-        Form.clearFields();           
-    }   
+            .add('active')                          
+    },
+
+    close(){
+        document
+            .querySelector('.modal-overlay')
+            .classList
+            .remove('active')       
+    },
+    
+    setIsEditing(value){
+        Modal.isEditing = value;
+    }     
 };
 
 const Storage = {
-    get(){
-        return JSON.parse(localStorage.getItem("dev.finances:transactions")) || []
+    get(key, isObject){
+        const StoredItem = localStorage.getItem(key);
+        if(isObject) {
+            return JSON.parse(StoredItem);
+        }else{
+            return StoredItem;
+        }
+
     },
-    set(transactions){
-        localStorage.setItem("dev.finances:transactions", JSON.stringify(transactions))
+    set(key, value, isObject){
+        if(isObject){
+            localStorage.setItem(key, JSON.stringify(value))
+        }else{
+            localStorage.setItem(key, value)
+        }
+
     },
 };
 
@@ -37,7 +67,8 @@ const transactions = [
 ];
 
 const Transaction = {
-    all: Storage.get(),
+    all: Storage.get('dev.finances:transactions', true) || [],
+    underEditing: null,
     add(transaction){
         Transaction.all.push(transaction);        
         App.reload();
@@ -48,8 +79,8 @@ const Transaction = {
         App.reload();
     },
 
-    recover(index, transaction){ 
-        Modal.toggle();
+    recover(index,){ 
+        Transaction.underEditing = index;          
         let elDescription = document.getElementById('description');
         let elAmount = document.getElementById('amount');
         let elDate = document.getElementById('date');
@@ -62,7 +93,19 @@ const Transaction = {
         elDate.value = Utils.editDate(dateValue);
         
         let element = document.getElementById('save');
-        element.onclick = function() {Transaction.all.splice(index, 1)}; 
+        element.onclick = function() {Transaction.update(index,1)};       
+        Modal.open(true);        
+    },
+
+    update(index, updateTransaction){
+        const { description, amount, date } = updateTransaction;
+        Transaction.all[index] = {
+            description,
+            amount,
+            date
+        };
+        App.reload();
+        Modal.setIsEditing(false);
     },
 
     incomes(){
@@ -215,27 +258,40 @@ const Form = {
         }
     },
 
+    
     saveTransaction(transaction){
         Transaction.add(transaction);
     },
-
+    
     clearFields(){
         Form.description.value = '';
         Form.amount.value = '';
         Form.date.value = '';
     },
-
+    
     submit(event) {
         event.preventDefault();
+        
         try {            
             Form.validateFields();
+            const index = Transaction.editionIndex
             const transaction = Form.formatValues();
-            Form.saveTransaction(transaction);            
+            if(Modal.isEditing){
+                Transaction.update(index, transaction)
+                App.reload();
+            }else{                
+                Form.saveTransaction(transaction);               
+            }
             Form.clearFields();
-            Modal.toggle();            
+            Modal.close();            
         } catch (error) {
             alert(error.message);           
         }
+    },
+    updateFields({ description, amount, date }){
+        Form.description.value = description;
+        Form.amount.value = Utils.editAmount(amount);
+        Form.date.value = Utils.editDate(date);
     }
 }
 
@@ -271,11 +327,11 @@ changeTheme.addEventListener("click", handleClick)
 
 
 const App = {
-    init() {
+    init() {        
         Transaction.all.forEach(DOM.addTransaction);  
         DOM.updateCard();     
         DOM.updateBalance();
-        Storage.set(Transaction.all)         
+        Storage.set('dev.finances:transactions', Transaction.all, true)         
     },
     reload() {
         DOM.clearTransactions();
