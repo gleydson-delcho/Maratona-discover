@@ -1,7 +1,9 @@
 const Modal = {
     isEditing: false,
     open(isEditing, index = null){
-        if(isEditing){                       
+        Modal.isEditing = isEditing;                    
+        if(isEditing){  
+            Transaction.underEditing = index; 
             const transaction = Transaction.all[index];
             Form.updateFields(transaction);
             
@@ -15,11 +17,7 @@ const Modal = {
     close(){
         document
             .querySelector('.modal-overlay').classList.remove('active');
-    },
-    
-    setIsEditing(value){
-        Modal.isEditing = value;
-    }     
+    }      
 };
 
 const Storage = {
@@ -69,8 +67,8 @@ const Transaction = {
             amount,
             date
         };
-        App.reload();
-        Modal.setIsEditing(false);
+        
+        App.reload();        
     },
 
     incomes(){
@@ -250,7 +248,7 @@ const Form = {
             alert(error.message);           
         }
     },
-    
+
     updateFields({ description, amount, date }){
         Form.description.value = description;
         Form.amount.value = Utils.editAmount(amount);
@@ -288,7 +286,6 @@ function chargerTheme(){
 
 changeTheme.addEventListener("click", handleClick)
 
-
 const App = {
     init() {        
         Transaction.all.forEach(DOM.addTransaction);  
@@ -302,4 +299,3 @@ const App = {
     }
 }
 App.init();
-
